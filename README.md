@@ -1,3 +1,9 @@
+Buy me a coffee
+--------
+Consider buy me a cup of coffee so I won't be too sleepy when coding at night :)
+Send to my paypal at jasonmy99@gmail.com
+**Thank you very much**
+
 # Welcome to panda
 
 [panda](http://github.com/commaai/panda) is the nicest universal car interface ever.
