@@ -131,22 +131,6 @@ void escc_id(uint8_t fca_cmd_act, uint8_t aeb_cmd_act, uint8_t cf_vsm_warn_fca11
   }
   send = !send;
 }
-
-
-
-void smdps_clu11(void) {
- if (send) {
-   if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
-     CAN_FIFOMailBox_TypeDef to_send;
-     to_send.RDLR = 0x00;
-     to_send.RDTR = 4;
-     to_send.RIR = (0x2AA << 21) | 1U;
-     can_send(&to_send, 0, false);
-   }
- }
-
- 
-}
 // ****************************** safety mode ******************************
 
 // this is the only way to leave silent mode
