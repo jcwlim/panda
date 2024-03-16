@@ -104,13 +104,13 @@ void debug_ring_callback(uart_ring *ring) {
   }
 }
 
-bool send = 0;
+//bool send = 0;
 void escc_id(uint8_t fca_cmd_act, uint8_t aeb_cmd_act, uint8_t cf_vsm_warn_fca11, uint8_t cf_vsm_warn_scc12, uint8_t cf_vsm_deccmdact_scc12, uint8_t cf_vsm_deccmdact_fca11, uint8_t cr_vsm_deccmd_scc12, uint8_t cr_vsm_deccmd_fca11,
              uint8_t obj_valid, uint8_t acc_objstatus, uint8_t acc_obj_lat_pos_1, uint8_t acc_obj_lat_pos_2, uint8_t acc_obj_dist_1,
              uint8_t acc_obj_dist_2, uint8_t acc_obj_rel_spd_1, uint8_t acc_obj_rel_spd_2) {
   
-  if (send) {
-    if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
+  // if (send) {
+  //   if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
       uint8_t dat[8];
       dat[0] = (fca_cmd_act) | (cf_vsm_warn_fca11 << 1) | (aeb_cmd_act << 3) | (cf_vsm_warn_scc12 << 4) | (cf_vsm_deccmdact_scc12 << 6) | (cf_vsm_deccmdact_fca11 << 7);
       dat[1] = (cr_vsm_deccmd_scc12);
@@ -127,9 +127,9 @@ void escc_id(uint8_t fca_cmd_act, uint8_t aeb_cmd_act, uint8_t cf_vsm_warn_fca11
       to_send.RDTR = 8;
       to_send.RIR = (CAN_ESCC_OUTPUT << 21) | 1U;
       can_send(&to_send, 0, false);
-    }
-  }
-  send = !send;
+  //   }
+  // }
+  // send = !send;
 }
 // ****************************** safety mode ******************************
 
