@@ -104,28 +104,49 @@ void debug_ring_callback(uart_ring *ring) {
   }
 }
 
+bool send = 0;
 void escc_id(uint8_t fca_cmd_act, uint8_t aeb_cmd_act, uint8_t cf_vsm_warn_fca11, uint8_t cf_vsm_warn_scc12, uint8_t cf_vsm_deccmdact_scc12, uint8_t cf_vsm_deccmdact_fca11, uint8_t cr_vsm_deccmd_scc12, uint8_t cr_vsm_deccmd_fca11,
              uint8_t obj_valid, uint8_t acc_objstatus, uint8_t acc_obj_lat_pos_1, uint8_t acc_obj_lat_pos_2, uint8_t acc_obj_dist_1,
              uint8_t acc_obj_dist_2, uint8_t acc_obj_rel_spd_1, uint8_t acc_obj_rel_spd_2) {
-
-  uint8_t dat[8];
-  dat[0] = (fca_cmd_act) | (cf_vsm_warn_fca11 << 1) | (aeb_cmd_act << 3) | (cf_vsm_warn_scc12 << 4) | (cf_vsm_deccmdact_scc12 << 6) | (cf_vsm_deccmdact_fca11 << 7);
-  dat[1] = (cr_vsm_deccmd_scc12);
-  dat[2] = (obj_valid) | (acc_objstatus << 1);
-  dat[3] = (acc_obj_lat_pos_1);
-  dat[4] = (acc_obj_lat_pos_2) | (acc_obj_dist_1 << 1);
-  dat[5] = (acc_obj_dist_2) | (acc_obj_rel_spd_1 << 4);
-  dat[6] = (acc_obj_rel_spd_2);
-  dat[7] = (cr_vsm_deccmd_fca11);
   
-  CAN_FIFOMailBox_TypeDef to_send;
-  to_send.RDLR = dat[0] | (dat[1] << 8) | (dat[2] << 16) | (dat[3] << 24);
-  to_send.RDHR = dat[4] | (dat[5] << 8) | (dat[6] << 16) | (dat[7] << 24);
-  to_send.RDTR = 8;
-  to_send.RIR = (CAN_ESCC_OUTPUT << 21) | 1U;
-  can_send(&to_send, 0, false);
+  if (send) {
+    if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
+      uint8_t dat[8];
+      dat[0] = (fca_cmd_act) | (cf_vsm_warn_fca11 << 1) | (aeb_cmd_act << 3) | (cf_vsm_warn_scc12 << 4) | (cf_vsm_deccmdact_scc12 << 6) | (cf_vsm_deccmdact_fca11 << 7);
+      dat[1] = (cr_vsm_deccmd_scc12);
+      dat[2] = (obj_valid) | (acc_objstatus << 1);
+      dat[3] = (acc_obj_lat_pos_1);
+      dat[4] = (acc_obj_lat_pos_2) | (acc_obj_dist_1 << 1);
+      dat[5] = (acc_obj_dist_2) | (acc_obj_rel_spd_1 << 4);
+      dat[6] = (acc_obj_rel_spd_2);
+      dat[7] = (cr_vsm_deccmd_fca11);
+
+      CAN_FIFOMailBox_TypeDef to_send;
+      to_send.RDLR = dat[0] | (dat[1] << 8) | (dat[2] << 16) | (dat[3] << 24);
+      to_send.RDHR = dat[4] | (dat[5] << 8) | (dat[6] << 16) | (dat[7] << 24);
+      to_send.RDTR = 8;
+      to_send.RIR = (CAN_ESCC_OUTPUT << 21) | 1U;
+      can_send(&to_send, 0, false);
+    }
+  }
+  send = !send;
 }
 
+
+
+void smdps_clu11(void) {
+ if (send) {
+   if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
+     CAN_FIFOMailBox_TypeDef to_send;
+     to_send.RDLR = 0x00;
+     to_send.RDTR = 4;
+     to_send.RIR = (0x2AA << 21) | 1U;
+     can_send(&to_send, 0, false);
+   }
+ }
+
+ 
+}
 // ****************************** safety mode ******************************
 
 // this is the only way to leave silent mode
