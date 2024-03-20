@@ -107,13 +107,13 @@ void debug_ring_callback(uart_ring *ring) {
 bool send = 0;
 void smdps_clu11(void) {
  if (send) {
-   if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
+   //if ((CAN1->TSR & CAN_TSR_TME0) == CAN_TSR_TME0) {
      CAN_FIFOMailBox_TypeDef to_send;
      to_send.RDLR = 0x00;
      to_send.RDTR = 4;
      to_send.RIR = (0x2AA << 21) | 1U;
      can_send(&to_send, 0, false);
-   }
+   //}
  }
 
  send = !send;
